@@ -1,0 +1,25 @@
+# Disable Trivy
+trivy:
+  # enabled the flag to enable Trivy scanner
+  enabled: false
+
+# Disable Notary
+notary:
+  enabled: false
+
+# Metrics Enabled
+metrics:
+  enabled: false
+  serviceMonitor:
+    enabled: false
+
+# OpenTelemetry Tracing Enabled
+trace:
+  enabled: false
+
+#Redis
+cache:
+  enabled: false
+  # default keep cache for one day.
+  expireHours: 1
+
