@@ -1,16 +1,14 @@
 package cmd
 
 import (
-	"os"
+	"helm-sdk-for-go/login"
 
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"helm.sh/helm/v3/pkg/action"
-	"helm.sh/helm/v3/pkg/registry"
 )
 
-var chart = ChartSpec{}
-var repo = RepoCreds{}
+var chart = login.ChartSpec{}
+var repo = login.RepoCreds{}
 
 // loginCmd represents the login command
 var loginCmd = &cobra.Command{
@@ -18,31 +16,18 @@ var loginCmd = &cobra.Command{
 	Short: "A brief description of your command",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		logrus.Info("Trying to login to the Helm Registry.")
+
 		// Login Harbor registry
-		err := HarborLogin(chart, repo, true)
+		err := login.HarborLogin(login.ChartSpec(chart), login.RepoCreds{Username: repo.Username, Password: repo.Password}, true)
 		// Printing Error if any
 		if err != nil {
-			logrus.Fatal("logging fail \n", err)
+			logrus.Fatal("Logging fail.\n", err)
 			return err
 		} else {
-			logrus.Info("Logged in")
+			logrus.Info("Logged in ")
 			return nil
 		}
 	},
-}
-
-// Harbor registry Login Func
-func HarborLogin(spec ChartSpec, creds RepoCreds, insecure bool) error {
-	rc, err := registry.NewClient()
-	if err != nil {
-		return err
-	}
-	actionConfig := new(action.Configuration)
-	actionConfig.RegistryClient = rc
-	login := action.NewRegistryLogin(actionConfig)
-	opts := action.WithInsecure(insecure)
-	err = login.Run(os.Stdout, chart.Repository, repo.Username, repo.Password, opts)
-	return err
 }
 
 func init() {

@@ -19,7 +19,6 @@ package login
 import (
 	"os"
 
-	"github.com/sirupsen/logrus"
 	"helm.sh/helm/v3/pkg/action"
 	"helm.sh/helm/v3/pkg/registry"
 )
@@ -38,11 +37,13 @@ func HarborLogin(spec ChartSpec, creds RepoCreds, insecure bool) error {
 	login := action.NewRegistryLogin(actionConfig)
 	opts := action.WithInsecure(insecure)
 	err = login.Run(os.Stdout, chart.Repository, repo.Username, repo.Password, opts)
-	if err != nil {
-		logrus.Fatal("logging fail", err)
-		return err
-	} else {
-		logrus.Info("Logged in")
-		return nil
-	}
+	return err
+}
+
+func ChartPackage(dir string) (string, error) {
+	packageC := action.NewPackage()
+	packageC.DependencyUpdate = true
+	var values map[string]interface{}
+	path, err := packageC.Run(dir, values)
+	return path, err
 }
