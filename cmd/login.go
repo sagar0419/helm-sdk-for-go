@@ -1,24 +1,18 @@
-/*
-Copyright © 2023 NAME HERE <EMAIL ADDRESS>
-*/
 package cmd
 
 import (
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"helm.sh/helm/v3/pkg/action"
-	"helm.sh/helm/v3/pkg/cli"
+	"helm.sh/helm/v3/pkg/registry"
 )
 
 var chart = ChartSpec{}
 
 var repo = RepoCreds{}
-
-// var settings *cli.EnvSettings
 
 // loginCmd represents the login command
 var loginCmd = &cobra.Command{
@@ -27,46 +21,30 @@ var loginCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("login called")
 
-		login()
+		// login()
+		login(chart, repo, true)
 	},
 }
 
-// func login(spec ChartSpec, repo RepoCreds, insecure bool) error {
-// 	actionConfig := new(action.Configuration)
-// 	settings = cli.New()
-// 	if err := actionConfig.Init(settings.RESTClientGetter(), settings.Namespace(), os.Getenv("HELM_DRIVER"), debug); err != nil {
-// 		log.Fatal(err)
-// 	}
-
-// 	opts := action.WithInsecure(insecure)
-// 	debug()
-// 	loginClient := action.NewRegistryLogin(actionConfig)
-// 	fmt.Println(loginClient)
-// 	err := loginClient.Run(nil, chart.Repository, repo.Username, repo.Password, opts)
-// 	if err != nil {
-// 		logrus.Fatal("Unable to login to the helm registry. ", err)
-// 		return err
-// 	} else {
-// 		logrus.Info("Logged into the helm repo.")
-// 		return nil
-// 	}
-// }
-
-func login() error {
-	actionConfig := new(action.Configuration)
-	settings := cli.New()
-	if err := actionConfig.Init(settings.RESTClientGetter(), settings.Namespace(), os.Getenv("HELM_DRIVER"), log.Printf); err != nil {
-		logrus.Fatal(err)
-	}
-
-	client := action.NewRegistryLogin(actionConfig)
-	insecure := true
-	opts := action.WithInsecure(insecure)
-
-	// err := action.NewRegistryLogin(actionConfig).Run(os.Stdout, chart.Repository, repo.Username, repo.Password, opts)
-	err := client.Run(os.Stdout, chart.Repository, repo.Username, repo.Password, opts)
+func login(spec ChartSpec, creds RepoCreds, insecure bool) error {
+	rc, err := registry.NewClient()
 	if err != nil {
-		logrus.Fatal("logging failes", err)
+		return err
+	}
+	client := new(action.RegistryLogin)
+	actionConfig := new(action.Configuration)
+	actionConfig.RegistryClient = rc
+
+	// actionConfig := new(action.Configuration)
+	login := action.NewRegistryLogin(actionConfig)
+	// client := new(action.RegistryLogin)
+	fmt.Println(client)
+
+	opts := action.WithInsecure(insecure)
+	err = login.Run(os.Stdout, chart.Repository, repo.Username, repo.Password, opts)
+	// err := client.Run(os.Stdout, chart.Repository, repo.Username, repo.Password, opts)
+	if err != nil {
+		logrus.Fatal("logging fail", err)
 		return err
 	} else {
 		logrus.Info("Logged in")
