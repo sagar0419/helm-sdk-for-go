@@ -4,7 +4,7 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 */
 package main
 
-import "cobra/cmd"
+import "helm-sdk-for-go/cmd"
 
 func main() {
 	cmd.Execute()

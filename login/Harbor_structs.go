@@ -27,13 +27,3 @@ type ChartSpec struct {
 	// PullSecretRef is reference to the secret containing credentials to helm repository
 	// PullSecretRef xpv1.SecretReference `json:"pullSecretRef,omitempty"`
 }
-
-const (
-	errFailedToCheckIfLocalChartExists = "failed to check if cached chart file exists"
-	errFailedToPullChart               = "failed to pull chart"
-	errFailedToLoadChart               = "failed to load chart"
-	errUnexpectedDirContentTmpl        = "expected 1 .tgz chart file, got [%s]"
-	errFailedToParseURL                = "failed to parse URL"
-	errFailedToLogin                   = "failed to login to registry"
-	errUnexpectedOCIUrlTmpl            = "url not prefixed with oci://, got [%s]"
-)

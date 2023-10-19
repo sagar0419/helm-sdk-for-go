@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/sirupsen/logrus"
@@ -11,45 +10,39 @@ import (
 )
 
 var chart = ChartSpec{}
-
 var repo = RepoCreds{}
 
 // loginCmd represents the login command
 var loginCmd = &cobra.Command{
 	Use:   "login",
 	Short: "A brief description of your command",
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("login called")
-
-		// login()
-		login(chart, repo, true)
+	RunE: func(cmd *cobra.Command, args []string) error {
+		logrus.Info("Trying to login to the Helm Registry.")
+		// Login Harbor registry
+		err := HarborLogin(chart, repo, true)
+		// Printing Error if any
+		if err != nil {
+			logrus.Fatal("logging fail \n", err)
+			return err
+		} else {
+			logrus.Info("Logged in")
+			return nil
+		}
 	},
 }
 
-func login(spec ChartSpec, creds RepoCreds, insecure bool) error {
+// Harbor registry Login Func
+func HarborLogin(spec ChartSpec, creds RepoCreds, insecure bool) error {
 	rc, err := registry.NewClient()
 	if err != nil {
 		return err
 	}
-	client := new(action.RegistryLogin)
 	actionConfig := new(action.Configuration)
 	actionConfig.RegistryClient = rc
-
-	// actionConfig := new(action.Configuration)
 	login := action.NewRegistryLogin(actionConfig)
-	// client := new(action.RegistryLogin)
-	fmt.Println(client)
-
 	opts := action.WithInsecure(insecure)
 	err = login.Run(os.Stdout, chart.Repository, repo.Username, repo.Password, opts)
-	// err := client.Run(os.Stdout, chart.Repository, repo.Username, repo.Password, opts)
-	if err != nil {
-		logrus.Fatal("logging fail", err)
-		return err
-	} else {
-		logrus.Info("Logged in")
-		return nil
-	}
+	return err
 }
 
 func init() {

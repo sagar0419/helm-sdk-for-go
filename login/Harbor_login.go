@@ -17,41 +17,32 @@ limitations under the License.
 package login
 
 import (
-	"net/url"
-	"strings"
+	"os"
 
-	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"helm.sh/helm/v3/pkg/action"
 	"helm.sh/helm/v3/pkg/registry"
 )
 
-type HelmClient struct {
-	pullClient    *action.Pull
-	packageClient *action.Package
-	pushClient    *action.Push
-	loginClient   *action.RegistryLogin
-	installChart  *action.Install
-}
+var chart = ChartSpec{}
 
-func (hc *HelmClient) Login(spec ChartSpec, creds RepoCreds, insecure bool) error {
-	ociURL := spec.URL
-	if spec.URL == "" {
-		ociURL = spec.Repository
+var repo = RepoCreds{}
+
+func HarborLogin(spec ChartSpec, creds RepoCreds, insecure bool) error {
+	rc, err := registry.NewClient()
+	if err != nil {
+		return err
 	}
-	if !registry.IsOCI(ociURL) {
+	actionConfig := new(action.Configuration)
+	actionConfig.RegistryClient = rc
+	login := action.NewRegistryLogin(actionConfig)
+	opts := action.WithInsecure(insecure)
+	err = login.Run(os.Stdout, chart.Repository, repo.Username, repo.Password, opts)
+	if err != nil {
+		logrus.Fatal("logging fail", err)
+		return err
+	} else {
+		logrus.Info("Logged in")
 		return nil
 	}
-	parsedURL, err := url.Parse(ociURL)
-	if err != nil {
-		return errors.Wrap(err, errFailedToParseURL)
-	}
-	var out strings.Builder
-
-	opts := action.WithInsecure(insecure)
-	err = hc.loginClient.Run(&out, parsedURL.Host, creds.Username, creds.Password, opts)
-
-	logrus.Info(out.String())
-
-	return errors.Wrap(err, errFailedToLogin)
 }
