@@ -20,6 +20,7 @@ import (
 	"os"
 
 	"helm.sh/helm/v3/pkg/action"
+	"helm.sh/helm/v3/pkg/cli"
 	"helm.sh/helm/v3/pkg/registry"
 )
 
@@ -46,4 +47,12 @@ func ChartPackage(dir string) (string, error) {
 	var values map[string]interface{}
 	path, err := packageC.Run(dir, values)
 	return path, err
+}
+
+func HarborPush(spec ChartSpec, helmChart string) error {
+	actionConfig := new(action.Configuration)
+	harborPush := action.NewPushWithOpts(action.WithPushConfig(actionConfig))
+	harborPush.Settings = &cli.EnvSettings{}
+	_, err := harborPush.Run(helmChart, spec.Repository)
+	return err
 }

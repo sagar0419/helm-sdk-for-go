@@ -9,8 +9,6 @@ import (
 
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"helm.sh/helm/v3/pkg/action"
-	"helm.sh/helm/v3/pkg/cli"
 )
 
 var url = login.ChartSpec{}
@@ -22,23 +20,15 @@ var pushCmd = &cobra.Command{
 	Short: "A brief description of your command",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		fmt.Println("push called")
-		err := HarborPush(url, chartName)
+		err := login.HarborPush(url, chartName)
 		if err != nil {
 			logrus.Fatal("An error accoured unable to push the repo.\n")
 			return err
 		} else {
-			logrus.Info("Chart is pushed to the helm registry. \n", url)
+			logrus.Info("Chart is pushed to the helm registry. \n", url.Repository)
 			return nil
 		}
 	},
-}
-
-func HarborPush(spec login.ChartSpec, helmChart string) error {
-	actionConfig := new(action.Configuration)
-	harborPush := action.NewPushWithOpts(action.WithPushConfig(actionConfig))
-	harborPush.Settings = &cli.EnvSettings{}
-	_, err := harborPush.Run(helmChart, spec.Repository)
-	return err
 }
 
 func init() {
@@ -46,7 +36,7 @@ func init() {
 	helmPushFlag(pushCmd)
 }
 func helmPushFlag(cmd *cobra.Command) {
-	cmd.Flags().StringVar(&url.Repository, "url", "ci://harbor.bender.rocks/helm", "Use registry OCI URL to push the helm chart on the Helm registry")
+	cmd.Flags().StringVar(&url.Repository, "url", "oci://sagar.parmar.io/helm", "Use registry OCI URL to push the helm chart on the Helm registry")
 	cmd.Flags().StringVar(&chartName, "chartName", "", "Provide the name of the chart that you want to push to the helm repo.")
 
 	requiredFlags := []string{
