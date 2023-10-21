@@ -1,3 +1,6 @@
+/*
+Copyright © 2023 Sagar Parmar <sagar.rajput27@live.com>
+*/
 package cmd
 
 import (
