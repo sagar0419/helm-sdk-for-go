@@ -1,5 +1,6 @@
 /*
-Copyright © 2023 Sagar Parmar <sagar.rajput27@live.com>
+Copyright © 2023 NAME HERE <EMAIL ADDRESS>
+
 */
 package main
 
