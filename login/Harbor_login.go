@@ -17,29 +17,11 @@ limitations under the License.
 package login
 
 import (
-	"os"
-
 	"helm.sh/helm/v3/pkg/action"
 	"helm.sh/helm/v3/pkg/cli"
-	"helm.sh/helm/v3/pkg/registry"
 )
 
-var chart = ChartSpec{}
-
-var repo = RepoCreds{}
-
-func HarborLogin(spec ChartSpec, creds RepoCreds, insecure bool) error {
-	rc, err := registry.NewClient()
-	if err != nil {
-		return err
-	}
-	actionConfig := new(action.Configuration)
-	actionConfig.RegistryClient = rc
-	login := action.NewRegistryLogin(actionConfig)
-	opts := action.WithInsecure(insecure)
-	err = login.Run(os.Stdout, chart.Repository, repo.Username, repo.Password, opts)
-	return err
-}
+var chart = ChartDetails{}
 
 func ChartPackage(dir string) (string, error) {
 	packageC := action.NewPackage()
@@ -49,10 +31,10 @@ func ChartPackage(dir string) (string, error) {
 	return path, err
 }
 
-func HarborPush(spec ChartSpec, helmChart string) error {
+func HelmPush(spec ChartDetails, helmChart string) error {
 	actionConfig := new(action.Configuration)
-	harborPush := action.NewPushWithOpts(action.WithPushConfig(actionConfig))
-	harborPush.Settings = &cli.EnvSettings{}
-	_, err := harborPush.Run(helmChart, spec.Repository)
+	HelmPush := action.NewPushWithOpts(action.WithPushConfig(actionConfig))
+	HelmPush.Settings = &cli.EnvSettings{}
+	_, err := HelmPush.Run(helmChart, spec.Repository)
 	return err
 }

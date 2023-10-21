@@ -11,16 +11,16 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var url = login.ChartSpec{}
+var url = login.ChartDetails{}
 var chartName string
 
 // pushCmd represents the push command
 var pushCmd = &cobra.Command{
 	Use:   "push",
-	Short: "A brief description of your command",
+	Short: "Use this command to push the helm chart on to the helm registry",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		fmt.Println("push called")
-		err := login.HarborPush(url, chartName)
+		err := login.HelmPush(url, chartName)
 		if err != nil {
 			logrus.Fatal("An error accoured unable to push the repo.\n")
 			return err
@@ -36,7 +36,7 @@ func init() {
 	helmPushFlag(pushCmd)
 }
 func helmPushFlag(cmd *cobra.Command) {
-	cmd.Flags().StringVar(&url.Repository, "url", "oci://sagar.parmar.io/helm", "Use registry OCI URL to push the helm chart on the Helm registry")
+	cmd.Flags().StringVar(&url.Repository, "url", "oci://sagar.parmar.io/demo", "Use registry OCI URL to push the helm chart on the Helm registry")
 	cmd.Flags().StringVar(&chartName, "chartName", "", "Provide the name of the chart that you want to push to the helm repo.")
 
 	requiredFlags := []string{

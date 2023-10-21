@@ -16,7 +16,7 @@ var Dir string
 // packageCmd represents the package command
 var packageCmd = &cobra.Command{
 	Use:   "package",
-	Short: "A brief description of your command",
+	Short: "Use this command to 'zip/Create Package' the Helm folder",
 
 	RunE: func(cmd *cobra.Command, args []string) error {
 		fmt.Println("package called")
@@ -38,7 +38,7 @@ func init() {
 }
 
 func packageCmdFlags(cmd *cobra.Command) {
-	cmd.Flags().StringVar(&Dir, "dir", "", "Specify Directory Path where Chart.yaml file of Helm chart is present")
+	cmd.Flags().StringVar(&Dir, "dir", "", "Specify Directory Path where Chart.yaml file of Helm chart is present.")
 	enforceFlags := []string{
 		"dir",
 	}
