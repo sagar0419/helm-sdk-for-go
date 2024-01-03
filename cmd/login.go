@@ -19,7 +19,7 @@ var repo = login.RepoDetails{}
 // loginCmd represents the login command
 var loginCmd = &cobra.Command{
 	Use:   "login",
-	Short: "Use this sub command to login into Helm private registry.",
+	Short: "Use this subcommand to log into Helm private registry.",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		logrus.Info("Trying to login to the Helm Registry.")
 
